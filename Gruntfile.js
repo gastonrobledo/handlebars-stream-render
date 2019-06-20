@@ -6,6 +6,7 @@ module.exports = function(grunt) {
 
     eslint: {
       options: {
+        parser: 'babel-eslint'
       },
       files: [
         '*.js',
