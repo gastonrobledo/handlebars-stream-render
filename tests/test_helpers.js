@@ -1,6 +1,6 @@
 const { Transform } = require('stream'),
       { assert } = require('chai'),
-      handlebars = require('../lib')
+      handlebars = require('../index')
 
 class HandlebarsStream extends Transform {
 
