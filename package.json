@@ -1,6 +1,6 @@
 {
   "name": "handlebars-stream-render",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Handlebars modification to work with stream outputs",
   "keywords": [
     "handlebars",
