@@ -1,7 +1,6 @@
 vendor
 .rvmrc
 .DS_Store
-lib/handlebars/compiler/parser.js
 /dist/
 /tmp/
 /coverage/
