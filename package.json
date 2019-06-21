@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "neo-async": "^2.6.0",
+    "pump": "^3.0.0",
     "source-map": "^0.6.1",
     "yargs": "^3.32.0"
   },

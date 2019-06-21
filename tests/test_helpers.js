@@ -1,4 +1,4 @@
-const { Transform } = require('stream'),
+const { Transform, Writable } = require('stream'),
       { assert } = require('chai'),
       handlebars = require('../index')
 
@@ -124,7 +124,7 @@ describe('Test stream results', () => {
                       <div>
                         <p>Country: Canada</p>
                       </div>`
-    hbs.registerHelper('ipInfo', async function ipInfo() {
+    hbs.registerHelper('ipInfo', async() => {
       await timeout(3000)
       return { country: 'Canada' }
     })
@@ -191,6 +191,33 @@ describe('Test stream results', () => {
       done()
     })
 
+  })
+
+  it('test with stream helper', (done) => {
+    const hbs = new HandlebarsStream([{
+            name: 'test',
+            content: '{{#each names}}<i>{{name}}</i>{{/each}}'
+          }]),
+          expected = 'test <p><i>gaston</i><i>pedro</i></p> test',
+          stream = new Transform({
+            objectMode: true,
+            transform(chunk, enc, cb) {
+              this.push(chunk)
+              cb()
+            }
+          })
+    hbs.compile('test <p>{{> test}}</p> test', { names: stream })
+    let result = ''
+    hbs.on('data', (block) => {
+      result += block.toString()
+    }).on('end', () => {
+      assert(result.trim() === expected.trim())
+      done()
+    })
+
+    stream.write({ name: 'gaston' })
+    stream.write({ name: 'pedro' })
+    stream.end()
   })
 
 })
