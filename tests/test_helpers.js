@@ -220,4 +220,221 @@ describe('Test stream results', () => {
     stream.end()
   })
 
+  it('test with partials', (done) => {
+    const partials = [
+            {
+              name: 'c_table_headers_temp', content: `<tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Age</th>
+    <th>Height</th>
+    <th>Weight</th>
+    <th>Heart Rate</th>
+    <th>Blood Pressure</th>
+    <th>Body Fat Percentage</th>
+    <th>Body Mass Index</th>
+    <th>Waist Circumference</th>
+    <th>Does Exercise</th>
+    <th>Exercise hours per week</th>
+</tr>`
+            },
+            {
+              name: 'c_table_content_temp', content: `<tr>
+    <td>{{c_id}}</td>
+    <td>{{c_name}}</td>
+    <td>{{c_age}}</td>
+    <td>{{c_height}}</td>
+    <td>{{c_weight}}</td>
+    <td>{{c_heart_rate}}</td>
+    <td>{{c_blood_pressure}}</td>
+    <td>{{c_body_fat_percentage}}</td>
+    <td>{{c_body_mass_index}}</td>
+    <td>{{c_waist_circumference}}</td>
+    {{#if c_does_exercise}}
+        <td>YES</td>
+        <td>{{c_exercise_hours}}</td>
+    {{else}}
+        <td>NOPE</td>
+        <td>NONE</td>
+    {{/if}}
+</tr>`
+            }
+          ],
+          hbs = new HandlebarsStream(partials),
+          expected = `<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+    <title>Patient Summary</title>
+    <style>
+        h1 {
+            color: blue;
+            text-align: center;
+            display: block;
+            font-size: 2em;
+            margin: 0.67em 0.4em;
+            font-weight: bold;
+        }
+        p {
+            color: #4d4d4d;
+            text-align: justify;
+        }
+        table {
+            border-spacing: 0;
+            border-top: 2px solid black;
+            border-right: 2px solid black;
+            font-size: smaller;
+            text-align: center;
+        }
+        td {
+            border-bottom: 2px solid black;
+            border-left: 2px solid black;
+        }
+        th {
+            border-bottom: 2px solid black;
+            border-left: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Patients</h1>
+    <p>A summary of patient information</p>
+    <br>
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </p>
+    <table>
+<tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Age</th>
+    <th>Height</th>
+    <th>Weight</th>
+    <th>Heart Rate</th>
+    <th>Blood Pressure</th>
+    <th>Body Fat Percentage</th>
+    <th>Body Mass Index</th>
+    <th>Waist Circumference</th>
+    <th>Does Exercise</th>
+    <th>Exercise hours per week</th>
+</tr><tr>
+    <td></td>
+    <td>Gaston</td>
+    <td>37</td>
+    <td>14</td>
+    <td>100</td>
+    <td>120</td>
+    <td></td>
+    <td>1</td>
+    <td>1</td>
+    <td>60</td>
+        <td>YES</td>
+        <td>8</td>
+</tr><tr>
+    <td></td>
+    <td>Lisandro</td>
+    <td>37</td>
+    <td>14</td>
+    <td>100</td>
+    <td>120</td>
+    <td></td>
+    <td>1</td>
+    <td>1</td>
+    <td>60</td>
+        <td>YES</td>
+        <td>8</td>
+</tr>    </table>
+</body>
+</html>`
+    hbs.registerHelper('cursor', async() => Promise.resolve([
+      {
+        c_name: 'Gaston',
+        c_age: 37,
+        c_height: 14,
+        c_weight: 100,
+        c_heart_rate: 120,
+        c_blod_pressure: 1,
+        c_body_fat_percentage: 1,
+        c_body_mass_index: 1,
+        c_waist_circumference: 60,
+        c_does_exercise: true,
+        c_exercise_hours: 8
+      },
+      {
+        c_name: 'Lisandro',
+        c_age: 37,
+        c_height: 14,
+        c_weight: 100,
+        c_heart_rate: 120,
+        c_blod_pressure: 1,
+        c_body_fat_percentage: 1,
+        c_body_mass_index: 1,
+        c_waist_circumference: 60,
+        c_does_exercise: true,
+        c_exercise_hours: 8
+      },
+    ]))
+    hbs.compile(`<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+    <title>Patient Summary</title>
+    <style>
+        h1 {
+            color: blue;
+            text-align: center;
+            display: block;
+            font-size: 2em;
+            margin: 0.67em 0.4em;
+            font-weight: bold;
+        }
+        p {
+            color: #4d4d4d;
+            text-align: justify;
+        }
+        table {
+            border-spacing: 0;
+            border-top: 2px solid black;
+            border-right: 2px solid black;
+            font-size: smaller;
+            text-align: center;
+        }
+        td {
+            border-bottom: 2px solid black;
+            border-left: 2px solid black;
+        }
+        th {
+            border-bottom: 2px solid black;
+            border-left: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Patients</h1>
+    <p>A summary of patient information</p>
+    <br>
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </p>
+    <table>
+        {{> c_table_headers_temp}}
+        {{#each (cursor patients)}}
+            {{> c_table_content_temp}}
+        {{/each}}
+    </table>
+</body>
+</html>`, { patients: [] })
+    let result = ''
+    hbs.on('data', (block) => {
+      result += block.toString()
+    }).on('end', () => {
+      assert(result.trim() === expected.trim())
+      done()
+    })
+  })
+
 })
