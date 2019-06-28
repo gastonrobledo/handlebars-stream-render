@@ -437,4 +437,31 @@ describe('Test stream results', () => {
     })
   })
 
+
+  it('test with blocks inside iterators helper', (done) => {
+    const hbs = new HandlebarsStream([{
+            name: 'test',
+            content: '{{#each names}}<i>{{#block "name"}}{{/block}}{{name}}</i>{{/each}}'
+          }]),
+          expected = '<i>Nombre:gaston</i><i>Nombre:pedro</i>',
+          stream = new Transform({
+            objectMode: true,
+            transform(chunk, enc, cb) {
+              this.push(chunk)
+              cb()
+            }
+          })
+    hbs.compile('{{#extend "test"}}{{#replace "name"}}Nombre:{{/replace}}{{/extend}}', { names: stream })
+    let result = ''
+    hbs.on('data', (block) => {
+      result += block.toString()
+    }).on('end', () => {
+      assert(result.trim() === expected.trim())
+      done()
+    })
+
+    stream.write({ name: 'gaston' })
+    stream.write({ name: 'pedro' })
+    stream.end()
+  })
 })
