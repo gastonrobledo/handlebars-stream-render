@@ -464,4 +464,56 @@ describe('Test stream results', () => {
     stream.write({ name: 'pedro' })
     stream.end()
   })
+
+  it('test multiple instances', (done) => {
+    const partial = {
+            name: 'test',
+            content: '<h3>{{name}}</h3>'
+          },
+          template = `<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<body>
+            <div style="width: 100%">
+                {{#each names}}
+                    {{> test}}
+                {{/each}}
+            </div>
+</div>
+</body>
+</html>`,
+          hbs = new HandlebarsStream([partial]),
+          hbs1 = new HandlebarsStream([partial]),
+          names = [{
+            name: 'Gaston'
+          }, {
+            name: 'Pedro'
+          }]
+    hbs.compile(template, { names })
+    hbs1.compile(template, { names })
+    const promises = []
+    promises.push(new Promise((resolve, reject) => {
+      let result = ''
+      hbs.on('data', (block) => {
+        result += block.toString()
+      }).once('error', e => reject(e))
+        .on('end', () => {
+          resolve(result)
+        })
+    }))
+    promises.push(new Promise((resolve, reject) => {
+      let result = ''
+      hbs1.on('data', (block) => {
+        result += block.toString()
+      }).once('error', e => reject(e))
+        .on('end', () => {
+          resolve(result)
+        })
+    }))
+
+    Promise.all(promises).then((results) => {
+      assert(results[0].trim() === results[1].trim(), 'results are not the same')
+      done()
+    }).catch(e => done(e))
+  })
+
 })
