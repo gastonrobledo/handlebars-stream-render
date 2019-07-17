@@ -14,7 +14,7 @@ class HandlebarsStream extends Transform {
 
   constructor(partials) {
     super()
-    this.hbs = handlebars.create()
+    this.hbs = handlebars.create(this)
     if (partials && partials.length) {
       partials.forEach(p => this.hbs.registerPartial(p.name, p.content))
     }
@@ -25,7 +25,7 @@ class HandlebarsStream extends Transform {
   }
 
   compile(content, data) {
-    this.result = this.hbs.compile(content)(data, { stream: this })
+    this.result = this.hbs.compile(content)(data)
     return this
   }
 
