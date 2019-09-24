@@ -180,7 +180,7 @@ describe('Test stream results', () => {
       return [{ name: 'test' }, { name: 'test2' }]
     })
 
-    hbs.compile('{{#extend "layout"}}{{#prepend "body_prepend"}}{{#each (cursor)}}<div><h2>{{name}}</h2><p>{{#delay}}{{/delay}}</p></div>{{/each}}{{/prepend}}{{#append "body_append"}}{{#each (cursor)}}<a>{{name}}</a><p>{{#delay}}{{/delay}}</p></div>{{/each}}{{/append}}{{#replace "body_replace"}}<ul>{{#each (cursor)}}<li>{{name}} - {{#delay}}{{/delay}}</li>{{/each}}</ul>{{/replace}}{{/extend}}', {})
+    hbs.compile('{{#extend "layout"}}{{#prepend "body_prepend"}}{{#each (cursor)}}{{#if @first}}<span>test</span>{{/if}}<div><h2>{{name}}</h2><p>{{#delay}}{{/delay}}</p></div>{{/each}}{{/prepend}}{{#append "body_append"}}{{#each (cursor)}}<a>{{name}}</a><p>{{#delay}}{{/delay}}</p></div>{{/each}}{{/append}}{{#replace "body_replace"}}<ul>{{#each (cursor)}}<li>{{name}} - {{#delay}}{{/delay}}</li>{{/each}}</ul>{{/replace}}{{/extend}}', {})
 
     const expected = '<html><body><h1>Layout</h1><div><ul><li>test - 1000</li><li>test2 - 1000</li></ul></div><div><i>Text before appended content</i><a>test</a><p>1000</p></div><a>test2</a><p>1000</p></div></div><div><div><h2>test</h2><p>1000</p></div><div><h2>test2</h2><p>1000</p></div><i>Text before appended content</i></div></body></html>'
     let result = ''
@@ -514,6 +514,34 @@ describe('Test stream results', () => {
       assert(results[0].trim() === results[1].trim(), 'results are not the same')
       done()
     }).catch(e => done(e))
+  })
+
+
+  it('test @first @last on stream', (done) => {
+    const hbs = new HandlebarsStream([{
+            name: 'test',
+            content: '{{#each names}}{{#if @first}}<div>{{/if}}<i>{{name}}</i>{{#if @last}}</div>{{/if}}{{/each}}'
+          }]),
+          expected = '<div><i>gaston</i><i>pedro</i></div>',
+          stream = new Transform({
+            objectMode: true,
+            transform(chunk, enc, cb) {
+              this.push(chunk)
+              cb()
+            }
+          })
+    hbs.compile('{{#extend "test"}}{{#replace "name"}}Nombre:{{/replace}}{{/extend}}', { names: stream })
+    let result = ''
+    hbs.on('data', (block) => {
+      result += block.toString()
+    }).on('end', () => {
+      assert(result.trim() === expected.trim())
+      done()
+    })
+
+    stream.write({ name: 'gaston' })
+    stream.write({ name: 'pedro' })
+    stream.end()
   })
 
 })
