@@ -168,7 +168,7 @@ describe('Test stream results', () => {
   it('Test stream out with sync helper', (done) => {
     const partials = [{
             name: 'layout',
-            content: '<html><body><h1>Layout</h1><div>{{#block "body_replace"}}<i>Text before</i>{{/block}}</div><div>{{#block "body_append"}}<i>Text before appended content</i>{{/block}}</div><div>{{#block "body_prepend"}}<i>Text before appended content</i>{{/block}}</div></body></html>'
+            content: '<html><body><h1>Layout</h1><div>{{#block "body_replace"}}<i>Text before</i>{{/block}}</div><div>{{#block "body_append"}}<i>Text before content</i>{{/block}}</div><div>{{#block "body_prepend"}}<i>Text after content</i>{{/block}}</div></body></html>'
           }],
           hbs = new HandlebarsStream(partials)
     hbs.registerHelper('delay', delay)
@@ -180,9 +180,9 @@ describe('Test stream results', () => {
       return [{ name: 'test' }, { name: 'test2' }]
     })
 
-    hbs.compile('{{#extend "layout"}}{{#prepend "body_prepend"}}{{#each (cursor)}}{{#if @first}}<span>test</span>{{/if}}<div><h2>{{name}}</h2><p>{{#delay}}{{/delay}}</p></div>{{/each}}{{/prepend}}{{#append "body_append"}}{{#each (cursor)}}<a>{{name}}</a><p>{{#delay}}{{/delay}}</p></div>{{/each}}{{/append}}{{#replace "body_replace"}}<ul>{{#each (cursor)}}<li>{{name}} - {{#delay}}{{/delay}}</li>{{/each}}</ul>{{/replace}}{{/extend}}', {})
+    hbs.compile('{{#extend "layout"}}{{#prepend "body_prepend"}}{{#each (cursor)}}{{#if @first}}<span>test first</span>{{/if}}<div><h2>{{name}}</h2><p>{{#delay}}{{/delay}}</p></div>{{/each}}{{/prepend}}{{#append "body_append"}}{{#each (cursor)}}<div><a>{{name}}</a><p>{{#delay}}{{/delay}}</p></div>{{/each}}{{/append}}{{#replace "body_replace"}}<ul>{{#each (cursor)}}<li>{{name}} - {{#delay}}{{/delay}}</li>{{/each}}</ul>{{/replace}}{{/extend}}', {})
 
-    const expected = '<html><body><h1>Layout</h1><div><ul><li>test - 1000</li><li>test2 - 1000</li></ul></div><div><i>Text before appended content</i><a>test</a><p>1000</p></div><a>test2</a><p>1000</p></div></div><div><div><h2>test</h2><p>1000</p></div><div><h2>test2</h2><p>1000</p></div><i>Text before appended content</i></div></body></html>'
+    const expected = '<html><body><h1>Layout</h1><div><ul><li>test - 1000</li><li>test2 - 1000</li></ul></div><div><i>Text before content</i><div><a>test</a><p>1000</p></div><div><a>test2</a><p>1000</p></div></div><div><span>test first</span><div><h2>test</h2><p>1000</p></div><div><h2>test2</h2><p>1000</p></div><i>Text after content</i></div></body></html>'
     let result = ''
     hbs.on('data', (content) => {
       result += content.toString()
