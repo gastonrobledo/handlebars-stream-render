@@ -544,4 +544,26 @@ describe('Test stream results', () => {
     stream.end()
   })
 
+
+  it('test with deep partial template', (done) => {
+    const hbs = new HandlebarsStream([{
+            name: 'test_deep',
+            content: '{{#each names}}<i>{{name}}</i>{{/each}}'
+          },
+          {
+            name: 'test',
+            content: '<div>{{> test_deep}}</div>'
+          }
+          ]),
+          expected = 'test <p><div><i>gaston</i><i>pedro</i></div></p> test'
+    hbs.compile('test <p>{{> test}}</p> test', { names: [{ name: 'gaston' }, { name: 'pedro' }] })
+    let result = ''
+    hbs.on('data', (block) => {
+      result += block.toString()
+    }).on('end', () => {
+      assert(result.trim() === expected.trim())
+      done()
+    })
+  })
+
 })
