@@ -1,4 +1,4 @@
-const { Transform, Writable } = require('stream'),
+const { Transform } = require('stream'),
       { assert } = require('chai'),
       handlebars = require('../index')
 
@@ -31,6 +31,7 @@ class HandlebarsStream extends Transform {
   }
 
 }
+// eslint-disable-next-line one-var
 const timeout = ms => new Promise(res => setTimeout(res, ms)),
       delay = async function delayFn() {
         await timeout(1000)
@@ -56,7 +57,7 @@ describe('Test stream results', () => {
         <ul>
             {{#each person}}
             <li>{{firstName}}, {{lastName}}</li>
-            {{/each}}    
+            {{/each}}
         </ul>
       </div>
     `, {
@@ -437,7 +438,6 @@ describe('Test stream results', () => {
     })
   })
 
-
   it('test with blocks inside iterators helper', (done) => {
     const hbs = new HandlebarsStream([{
             name: 'test',
@@ -516,7 +516,6 @@ describe('Test stream results', () => {
     }).catch(e => done(e))
   })
 
-
   it('test @first @last on stream', (done) => {
     const hbs = new HandlebarsStream([{
             name: 'test',
@@ -544,7 +543,6 @@ describe('Test stream results', () => {
     stream.end()
   })
 
-
   it('test with deep partial template', (done) => {
     const hbs = new HandlebarsStream([{
             name: 'test_deep',
@@ -566,4 +564,20 @@ describe('Test stream results', () => {
     })
   })
 
+  it('test without stream', async() => {
+    const hbs = handlebars.create(),
+          tpl = hbs.compile('{{#each names}}<p>{{name}}</p>{{/each}}'),
+          result = await tpl({ names: [{ name: 'gaston' }, { name: 'pedro' }] })
+    assert(result, '<p>gaston</p><p>pedro</p>')
+  })
+
+  it('test without stream and async helper', async() => {
+    const hbs = handlebars.create()
+    hbs.registerHelper('delay', delay)
+
+    // eslint-disable-next-line one-var
+    const tpl = hbs.compile('Delay {{#delay}}{{/delay}}'),
+          result = await tpl()
+    assert(result, 'Delay 1000')
+  })
 })
