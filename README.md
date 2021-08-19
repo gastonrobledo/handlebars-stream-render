@@ -104,3 +104,24 @@ const hbs = new HandlebarsStream()
     })
 
 ```
+
+#### Using as always but with async support as well
+
+
+```
+ const hbs = handlebars.create(),
+          tpl = hbs.compile('{{#each names}}<p>{{name}}</p>{{/each}}'),
+          result = await tpl({ names: [{ name: 'gaston' }, { name: 'pedro' }] })
+    assert(result, '<p>gaston</p><p>pedro</p>')
+   
+```
+
+```
+const hbs = handlebars.create()
+    hbs.registerHelper('delay', delay)
+
+    // eslint-disable-next-line one-var
+    const tpl = hbs.compile('Delay {{#delay}}{{/delay}}'),
+          result = await tpl()
+    assert(result, 'Delay 1000')
+```
