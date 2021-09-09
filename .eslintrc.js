@@ -34,6 +34,7 @@ module.exports = {
     "no-control-regex": 0,
     "no-unused-vars": "warn",
     "no-console": "off",
+    "no-param-reassign": "off",
     "one-var": ["warn", "always"],
     "padded-blocks": ["warn", {"classes":"always"}],
     "semi": ["error", "never"],

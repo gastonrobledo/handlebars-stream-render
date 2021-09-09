@@ -144,7 +144,7 @@ describe('Test stream results', () => {
       console.log('Error!!!', e)
       done(e)
     }).on('end', () => {
-      assert(result.trim() === expected.trim())
+      assert(result.trim() === expected.trim(), 'not equals')
       done()
     })
 
